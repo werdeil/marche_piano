@@ -2,7 +2,6 @@
 # -*- coding: utf8 -*-
 
 import pygame
-# pygame shall be installed (on debian python-pygame package)
 import time
 import os
 import RPi.GPIO as GPIO
@@ -119,11 +118,3 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         GPIO.cleanup()       # clean up GPIO on CTRL+C exit
     GPIO.cleanup()           # clean up GPIO on normal exit
-    
-    
-# Choosing which programs run when the Pi boots
-# /etc/rc.local is a script on the Raspberry Pi which runs when Linux first boots. To edit it, you will need root privileges:
-# sudo nano /etc/rc.local
-# If you want to run one of your Python scripts at start-up, add this to the end of rc.local:
-# python <yourscriptname>.py
-# To stop a script running, either delete the line it is on, or comment it out (add a # at the beginning of the line).

@@ -1,7 +1,7 @@
-# marche_piano
-Project to make a piano of stairs 
+# Marche Piano
+Project to turn stair steps into a piano
 
-This project was made as an animation for the Forum des Images during the festival "Tout-petits cinéma"
+This project was made as an animation for the Forum des Images during the festival "Tout-petits cinéma" in February 2015.
 
 ## Hardware setting
 

@@ -38,25 +38,30 @@ class Piano:
                 self.notes.append(pygame.mixer.Sound(os.path.join(folder, note)))
         self.last_changed_time = time.time()
             
+    def handle_sound_set_change(self):
+        current_time = time.time()
+        if self.auto_change and current_time-self.last_changed_time >= self.switch_time:
+            self.current_sound_set_index = (self.current_sound_set_index + 1)%len(self.sound_sets)
+            self.prepare_notes()
+
+    def handle_buttons(self):
+        if GPIO.input(self.push_button):
+            if self.auto_change:
+                self.auto_change = False
+                self.current_sound_set_index = 0
+                self.prepare_notes()
+            else:
+                self.current_sound_set_index = (self.current_sound_set_index + 1)%len(self.sound_sets)
+                self.prepare_notes()
+                if self.current_sound_set_index == 0: # Case all the sets have been done, reactivate the auto switch
+                    self.auto_change = True
+
     def main(self):
         while True:
             # Part for switching between sounds sets
-            current_time = time.time()
-            if self.auto_change and current_time-self.last_changed_time >= self.switch_time:
-                self.current_sound_set_index = (self.current_sound_set_index + 1)%len(self.sound_sets)
-                self.prepare_notes()
-                
-            if GPIO.input(self.push_button):
-                if self.auto_change:
-                    self.auto_change = False
-                    self.current_sound_set_index = 0
-                    self.prepare_notes()
-                else:
-                    self.current_sound_set_index = (self.current_sound_set_index + 1)%len(self.sound_sets) 
-                    self.prepare_notes()                    
-                    if self.current_sound_set_index == 0: # Case all the sets have been done, reactivate the auto switch
-                        self.auto_change = True
-                
+            self.handle_sound_set_change()
+            self.handle_buttons()
+
             # Part for the GPIO inputs
             for port in self.step_ports:
                 if GPIO.input(port):
@@ -77,21 +82,8 @@ class PianoEdge(Piano):
     def main(self):
         while True:
             # Part for switching between sounds sets
-            current_time = time.time()
-            if self.auto_change and current_time-self.last_changed_time >= self.switch_time:
-                self.current_sound_set_index = (self.current_sound_set_index + 1)%len(self.sound_sets)
-                self.prepare_notes()
-                
-            if GPIO.input(self.push_button):
-                if self.auto_change:
-                    self.auto_change = False
-                    self.current_sound_set_index = 0
-                    self.prepare_notes()
-                else:
-                    self.current_sound_set_index = (self.current_sound_set_index + 1)%len(self.sound_sets) 
-                    self.prepare_notes()                    
-                    if self.current_sound_set_index == 0: # Case all the sets have been done, reactivate the auto switch
-                        self.auto_change = True
+            self.handle_sound_set_change()
+            self.handle_buttons()
                         
             # Part for the LED
             GPIO.output(self.LED_button, self.auto_change)

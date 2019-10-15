@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-import pygame
-import time
 import os
+import time
+import pygame
 import RPi.GPIO as GPIO
 
 pygame.mixer.pre_init(channels=2, buffer=1024)
@@ -38,7 +38,7 @@ class Piano:
                 self.notes.append(pygame.mixer.Sound(os.path.join(folder, note)))
         self.last_changed_time = time.time()
             
-    def main():
+    def main(self):
         while True:
             # Part for switching between sounds sets
             current_time = time.time()
@@ -46,8 +46,8 @@ class Piano:
                 self.current_sound_set_index = (self.current_sound_set_index + 1)%len(self.sound_sets)
                 self.prepare_notes()
                 
-            if GPIO.input(self.push_button) == True:
-                if self.auto_change == True:
+            if GPIO.input(self.push_button):
+                if self.auto_change:
                     self.auto_change = False
                     self.current_sound_set_index = 0
                     self.prepare_notes()
@@ -59,7 +59,7 @@ class Piano:
                 
             # Part for the GPIO inputs
             for port in self.step_ports:
-                if GPIO.input(port) == True:
+                if GPIO.input(port):
                     self.notes[self.step_ports.index(port)].play()
             
             # Part for the LED
@@ -81,12 +81,12 @@ class PianoEdge(Piano):
         self.step_ports = ports[2:]
         for port in self.step_ports:
             GPIO.setup(port, GPIO.IN)
-            GPIO.add_event_detect(port, GPIO.RISING, callback=play_channel)
+            GPIO.add_event_detect(port, GPIO.RISING, callback=self.play_channel)
 
-    def play_channel(channel):
+    def play_channel(self, channel):
         self.notes[self.step_ports.index(channel)].play()
         
-    def main():
+    def main(self):
         while True:
             # Part for switching between sounds sets
             current_time = time.time()
@@ -94,8 +94,8 @@ class PianoEdge(Piano):
                 self.current_sound_set_index = (self.current_sound_set_index + 1)%len(self.sound_sets)
                 self.prepare_notes()
                 
-            if GPIO.input(self.push_button) == True:
-                if self.auto_change == True:
+            if GPIO.input(self.push_button):
+                if self.auto_change:
                     self.auto_change = False
                     self.current_sound_set_index = 0
                     self.prepare_notes()
@@ -110,11 +110,11 @@ class PianoEdge(Piano):
             time.sleep(0.5) # to avoid too many loops
     
 if __name__ == "__main__":
-    ports = []
+    PORTS = []
     try:
         #piano = Piano(ports)
-        piano = PianoEdge(ports)
-        piano.main() 
+        PIANO = PianoEdge(PORTS)
+        PIANO.main()
     except KeyboardInterrupt:
         GPIO.cleanup()       # clean up GPIO on CTRL+C exit
     GPIO.cleanup()           # clean up GPIO on normal exit

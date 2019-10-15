@@ -66,21 +66,9 @@ class Piano:
             GPIO.output(self.LED_button, self.auto_change)
     
 class PianoEdge(Piano):
-    def __init__(self, ports, switch_time = 3600):
-        self.auto_change = True
-        self.switch_time = switch_time
-        self.sound_sets = os.listdir("sounds")
-        self.current_sound_set_index = 0
-        self.prepare_notes()
-        #GPIO ports
-        GPIO.setmode(GPIO.BCM)
-        self.push_button = ports[0]
-        GPIO.setup(self.push_button, GPIO.IN)
-        self.LED_button = ports[1]
-        GPIO.setup(self.LED_button, GPIO.OUT, initial=1)
-        self.step_ports = ports[2:]
+    def __init__(self, ports, switch_time=3600):
+        super().__init__(ports, switch_time=switch_time)
         for port in self.step_ports:
-            GPIO.setup(port, GPIO.IN)
             GPIO.add_event_detect(port, GPIO.RISING, callback=self.play_channel)
 
     def play_channel(self, channel):
@@ -112,7 +100,6 @@ class PianoEdge(Piano):
 if __name__ == "__main__":
     PORTS = []
     try:
-        #piano = Piano(ports)
         PIANO = PianoEdge(PORTS)
         PIANO.main()
     except KeyboardInterrupt:

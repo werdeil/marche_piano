@@ -6,8 +6,6 @@ import time
 import pygame
 import RPi.GPIO as GPIO
 
-pygame.mixer.pre_init(channels=2, buffer=1024)
-pygame.mixer.init()
 
 class Piano:
     def __init__(self, ports, switch_time = 3600):
@@ -15,6 +13,8 @@ class Piano:
         self.switch_time = switch_time
         self.sound_sets = os.listdir("sounds")
         self.current_sound_set_index = 0
+        pygame.mixer.pre_init(channels=2, buffer=1024)
+        pygame.mixer.init()
         self.prepare_notes()
         #GPIO ports
         GPIO.setmode(GPIO.BCM)
